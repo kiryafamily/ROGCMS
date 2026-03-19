@@ -494,27 +494,62 @@ table {
     table-layout: fixed;
 }
 
+/* Apply border-box to all table cells so padding doesn't add extra width */
+th, td {
+    box-sizing: border-box;
+}
+
 th {
     background: #4B1C3C;
     color: white;
-    font-size: 10px; /* Smaller font to fit more */
+    font-size: 10px;
     padding: 8px 2px;
     font-weight: 600;
     text-transform: uppercase;
     text-align: center;
 }
 
-/* OPTIMIZED column widths for A4 */
-th:nth-child(1) { width: 18%; }  /* SUBJECT - English, Mathematics, etc */
-th:nth-child(2) { width: 8%; }   /* SCORE - 80 */
-th:nth-child(3) { width: 6%; }   /* AGG - 1,2,3 */
-th:nth-child(4) { width: 40%; }  /* REMARKS - "Outstanding performance!" */
-th:nth-child(5) { width: 8%; }   /* INIT - A.G, K.R, etc */
+/* FIXED: Table with optimal column widths for A4 */
+.table-container {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #FFB80080;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* Include padding in width – critical to prevent overflow */
+th, td {
+    box-sizing: border-box;
+}
+
+th {
+    background: #4B1C3C;
+    color: white;
+    font-size: 10px;
+    padding: 8px 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* OPTIMIZED column widths – now sum to 100% */
+th:nth-child(1) { width: 28%; }  /* SUBJECT – enough for long names */
+th:nth-child(2) { width: 8%; }   /* SCORE */
+th:nth-child(3) { width: 7%; }   /* AGG */
+th:nth-child(4) { width: 45%; }  /* REMARKS – slightly reduced */
+th:nth-child(5) { width: 12%; }  /* INIT – a bit more room for initials */
 
 td {
-    padding: 6px 2px;
+    padding: 4px 2px;             /* Reduced vertical padding slightly */
     border-bottom: 1px solid #FFB80030;
-    font-size: 10px; /* Smaller font */
+    font-size: 10px;
     text-align: center;
     vertical-align: middle;
     word-wrap: break-word;
@@ -526,7 +561,7 @@ td {
     text-align: left;
     padding-left: 4px;
     white-space: normal;
-    font-size: 9.5px; /* Even smaller for long names */
+    font-size: 9.5px;
     line-height: 1.2;
 }
 

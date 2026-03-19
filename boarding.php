@@ -215,6 +215,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h1><i class="fas fa-bed"></i> Boarding Management</h1>
                     <div class="class-slogan"><?php echo count($boarders); ?> Boarders • Dormitory Tracking</div>
                 </div>
+                <div class="school-badge">
+                    <a href="index.php" class="btn-premium"><i class="fas fa-arrow-left"></i> Back</a>
+                </div>
                 <div class="class-badge">
                     <button class="btn-premium" onclick="openAssignModal()">
                         <i class="fas fa-plus"></i> Assign Dorm

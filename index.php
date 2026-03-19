@@ -31,10 +31,10 @@ if (!$teacher) {
 $today = date('Y-m-d');
 $day_of_week = date('l');
 
-    // Get today's schedule
-    $stmt = $pdo->prepare("SELECT * FROM daily_schedule WHERE day_of_week = ? ORDER BY period_number");
-    $stmt->execute([$day_of_week]);
-    $schedule = $stmt->fetchAll();
+// Get today's schedule
+$stmt = $pdo->prepare("SELECT * FROM daily_schedule WHERE day_of_week = ? ORDER BY period_number");
+$stmt->execute([$day_of_week]);
+$schedule = $stmt->fetchAll();
 
 // Get today's attendance summary
 $stmt = $pdo->prepare("
@@ -132,8 +132,8 @@ if ($current_term) {
         .premium-header {
             background-color: #4B1C3C;
             border-radius: 15px;
-            padding: 30px 40px;
-            margin-bottom: 30px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(75, 28, 60, 0.2);
             position: relative;
         }
@@ -148,37 +148,37 @@ if ($current_term) {
 
         .class-title h1 {
             color: #ffffff;
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 5px;
         }
 
         .class-title h1 i {
             color: #FFB800;
-            margin-right: 15px;
+            margin-right: 10px;
         }
 
         .class-slogan {
             color: #FFB800;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
         }
 
         /* Teacher Profile Card */
         .teacher-profile {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             background-color: #2F1224;
-            padding: 15px 25px;
+            padding: 10px 20px;
             border-radius: 12px;
             border-left: 4px solid #FFB800;
         }
 
         .teacher-photo {
-            width: 70px;
-            height: 70px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background-color: #4B1C3C;
-            border: 3px solid #FFB800;
+            border: 2px solid #FFB800;
             overflow: hidden;
             position: relative;
         }
@@ -196,7 +196,7 @@ if ($current_term) {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: #FFB800;
         }
 
@@ -207,12 +207,12 @@ if ($current_term) {
         .teacher-name {
             color: #FFB800;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .teacher-title {
             color: #ffffff;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .photo-upload-btn {
@@ -220,14 +220,14 @@ if ($current_term) {
             bottom: 0;
             right: 0;
             background-color: #FFB800;
-            width: 25px;
-            height: 25px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #4B1C3C;
-            font-size: 0.8rem;
+            font-size: 0.6rem;
             cursor: pointer;
             border: 2px solid #4B1C3C;
             transition: background-color 0.3s;
@@ -238,57 +238,283 @@ if ($current_term) {
         }
 
         .class-badge {
-            background-color: #2F1224;
-            padding: 15px 25px;
-            border-radius: 10px;
-            border-left: 4px solid #FFB800;
-            text-align: center;
-        }
-
-        .class-badge .teacher {
-            color: #FFB800;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 3px;
-        }
-
-        .class-badge .year {
-            color: #ffffff;
-            font-size: 0.9rem;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .logout-btn {
             background-color: #4B1C3C;
             color: #ffffff;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 5px;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            margin-top: 10px;
             border: 1px solid #FFB800;
             transition: background-color 0.3s;
+            font-size: 0.9rem;
         }
 
         .logout-btn:hover {
             background-color: #1a0d14;
         }
 
-        /* Alert Box */
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        /* ========== NAVIGATION BAR ========== */
+        .main-nav {
+            background-color: #ffffff;
+            border-radius: 50px;
+            padding: 8px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(75,28,60,0.1);
+            border: 1px solid #e0d0e0;
+            position: relative;
+            display: flex;
+            justify-content: flex-end; /* pushes hamburger to right */
+            align-items: center;
+        }
+
+        /* Hamburger icon - hidden on desktop */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #4B1C3C;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            list-style: none;
+            justify-content: center;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            color: #4B1C3C;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: all 0.2s;
+        }
+
+        .nav-link i {
+            color: #FFB800;
+            font-size: 1rem;
+        }
+
+        .nav-link:hover {
+            background-color: #4B1C3C;
+            color: white;
+        }
+
+        .nav-link:hover i {
+            color: #FFB800;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(75,28,60,0.15);
+            border: 1px solid #FFB800;
+            z-index: 100;
+            padding: 8px 0;
+        }
+
+        .nav-item:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 10px 18px;
+            color: #4B1C3C;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
         }
 
-        .alert-info {
-            background-color: #e1f5fe;
-            border-left: 4px solid #0288d1;
-            color: #01579b;
+        .dropdown-content a i {
+            color: #FFB800;
+            width: 20px;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f5eaf5;
+        }
+
+        .dropdown-content hr {
+            border: none;
+            border-top: 1px dashed #FFB800;
+            margin: 5px 0;
+        }
+
+        /* Mobile overlay menu */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px; /* hidden off-screen */
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            box-shadow: -5px 0 20px rgba(75,28,60,0.3);
+            transition: right 0.3s ease;
+            padding: 20px 15px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.show {
+            right: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FFB800;
+        }
+
+        .mobile-menu-header h3 {
+            color: #4B1C3C;
+            font-weight: 600;
+        }
+
+        .mobile-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #4B1C3C;
+        }
+
+        .mobile-close:hover {
+            color: #FFB800;
+        }
+
+        .mobile-nav-item {
+            margin-bottom: 5px;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background-color: #f8f4f8;
+            border-radius: 10px;
+            color: #4B1C3C;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .mobile-nav-link i {
+            color: #FFB800;
+            width: 24px;
+        }
+
+        .mobile-nav-link:hover {
+            background-color: #4B1C3C;
+            color: white;
+        }
+
+        .mobile-nav-link:hover i {
+            color: #FFB800;
+        }
+
+        .mobile-dropdown {
+            display: none;
+            margin-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .mobile-dropdown.show {
+            display: block;
+        }
+
+        .mobile-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            color: #4B1C3C;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-left: 2px solid #FFB800;
+            margin: 2px 0;
+        }
+
+        .mobile-dropdown a i {
+            color: #FFB800;
+            width: 20px;
+        }
+
+        .mobile-dropdown a:hover {
+            background-color: #f0e8f0;
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .main-nav {
+                border-radius: 12px;
+                padding: 8px 15px;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none; /* hide desktop menu */
+            }
+
+            .nav-overlay.show {
+                display: block;
+            }
         }
 
         /* Time Card */
@@ -491,45 +717,6 @@ if ($current_term) {
             color: #4B1C3C;
         }
 
-        /* Action Grid */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .action-card {
-            background-color: #f8f4f8;
-            padding: 20px 15px;
-            border-radius: 8px;
-            text-align: center;
-            text-decoration: none;
-            border: 1px solid #e0d0e0;
-            transition: background-color 0.2s;
-        }
-
-        .action-card:hover {
-            background-color: #4B1C3C;
-        }
-
-        .action-card:hover i,
-        .action-card:hover span {
-            color: #ffffff;
-        }
-
-        .action-card i {
-            font-size: 2rem;
-            color: #4B1C3C;
-            margin-bottom: 8px;
-        }
-
-        .action-card span {
-            display: block;
-            color: #333;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
         /* Student List */
         .student-list {
             display: flex;
@@ -699,10 +886,6 @@ if ($current_term) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .action-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
         @media (max-width: 768px) {
@@ -724,12 +907,8 @@ if ($current_term) {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .action-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .class-title h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .time-card {
@@ -793,14 +972,163 @@ if ($current_term) {
                     
                     <!-- Class Badge with Logout -->
                     <div class="class-badge">
-                        <div class="teacher"><i class="fas fa-chalkboard-teacher"></i> P.5 Purple</div>
-                        <div class="year">
-                            <i class="fas fa-calendar-alt"></i> 
-                            Term <?php echo CURRENT_TERM; ?> | <?php echo ACADEMIC_YEAR; ?>
+                        <div class="teacher">
+                            <i class="fas fa-chalkboard-teacher"></i> P.5 Purple
                         </div>
                         <a href="logout.php" class="logout-btn">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar with Hamburger Menu (right-aligned) -->
+        <nav class="main-nav">
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Desktop menu -->
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="fas fa-check-circle"></i> Attendance <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 5px;"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="attendance.php"><i class="fas fa-sun"></i> Morning Roll Call</a>
+                        <a href="attendance.php?type=afternoon"><i class="fas fa-cloud-sun"></i> Afternoon Roll Call</a>
+                        <a href="attendance.php?type=evening"><i class="fas fa-moon"></i> Evening Roll Call</a>
+                        <hr>
+                        <a href="attendance-reports.php"><i class="fas fa-chart-line"></i> Reports & Export</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="fas fa-users"></i> Students <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="students.php"><i class="fas fa-list"></i> View All Students</a>
+                        <a href="add-student.php"><i class="fas fa-user-plus"></i> Add New Student</a>
+                        <a href="upload-student-photo.php"><i class="fas fa-camera"></i> Upload Photos</a>
+                        <a href="student-profile.php?id=<?php echo $recent_students[0]['id'] ?? ''; ?>"><i class="fas fa-id-card"></i> View Profile</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="fas fa-pencil-alt"></i> Marks <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="assessments.php"><i class="fas fa-table"></i> Marksheet</a>
+                        <a href="report-selector.php"><i class="fas fa-file-pdf"></i> Report Cards</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="fas fa-comments"></i> Communication <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="communication.php"><i class="fas fa-comments"></i> Parent Hub</a>
+                        <a href="sms-broadcast.php"><i class="fas fa-bullhorn"></i> Bulk SMS</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="fas fa-chart-bar"></i> Reports <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="attendance-reports.php"><i class="fas fa-calendar-check"></i> Attendance Reports</a>
+                        <a href="assessment-reports.php"><i class="fas fa-chart-line"></i> Performance Analysis</a>
+                        <a href="behavior-reports.php"><i class="fas fa-smile"></i> Behavior Logs</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="fas fa-cog"></i> Settings <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="timetable.php"><i class="fas fa-clock"></i> Timetable</a>
+                        <a href="public-holidays.php"><i class="fas fa-calendar-day"></i> Public Holidays</a>
+                        <a href="teacher-profile.php"><i class="fas fa-chalkboard-teacher"></i> Teacher Profile</a>
+                        <a href="school-info.php"><i class="fas fa-school"></i> School Info</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Mobile Overlay and Slide-out Menu -->
+        <div class="nav-overlay" id="navOverlay"></div>
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-menu-header">
+                <h3><i class="fas fa-crown" style="color: #FFB800;"></i> Menu</h3>
+                <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mobile-menu-content">
+                <!-- Mobile menu items with dropdowns -->
+                <div class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-link" onclick="toggleMobileDropdown(this); return false;">
+                        <span><i class="fas fa-check-circle"></i> Attendance</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-dropdown">
+                        <a href="attendance.php"><i class="fas fa-sun"></i> Morning Roll Call</a>
+                        <a href="attendance.php?type=afternoon"><i class="fas fa-cloud-sun"></i> Afternoon Roll Call</a>
+                        <a href="attendance.php?type=evening"><i class="fas fa-moon"></i> Evening Roll Call</a>
+                        <a href="attendance-reports.php"><i class="fas fa-chart-line"></i> Reports & Export</a>
+                    </div>
+                </div>
+                <div class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-link" onclick="toggleMobileDropdown(this); return false;">
+                        <span><i class="fas fa-users"></i> Students</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-dropdown">
+                        <a href="students.php"><i class="fas fa-list"></i> View All Students</a>
+                        <a href="add-student.php"><i class="fas fa-user-plus"></i> Add New Student</a>
+                        <a href="upload-student-photo.php"><i class="fas fa-camera"></i> Upload Photos</a>
+                        <a href="student-profile.php?id=<?php echo $recent_students[0]['id'] ?? ''; ?>"><i class="fas fa-id-card"></i> View Profile</a>
+                    </div>
+                </div>
+                <div class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-link" onclick="toggleMobileDropdown(this); return false;">
+                        <span><i class="fas fa-pencil-alt"></i> Marks</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-dropdown">
+                        <a href="assessments.php"><i class="fas fa-table"></i> Marksheet</a>
+                        <a href="report-selector.php"><i class="fas fa-file-pdf"></i> Report Cards</a>
+                    </div>
+                </div>
+                <div class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-link" onclick="toggleMobileDropdown(this); return false;">
+                        <span><i class="fas fa-comments"></i> Communication</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-dropdown">
+                        <a href="communication.php"><i class="fas fa-comments"></i> Parent Hub</a>
+                        <a href="sms-broadcast.php"><i class="fas fa-bullhorn"></i> Bulk SMS</a>
+                    </div>
+                </div>
+                <div class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-link" onclick="toggleMobileDropdown(this); return false;">
+                        <span><i class="fas fa-chart-bar"></i> Reports</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-dropdown">
+                        <a href="attendance-reports.php"><i class="fas fa-calendar-check"></i> Attendance Reports</a>
+                        <a href="assessment-reports.php"><i class="fas fa-chart-line"></i> Performance Analysis</a>
+                        <a href="behavior-reports.php"><i class="fas fa-smile"></i> Behavior Logs</a>
+                    </div>
+                </div>
+                <div class="mobile-nav-item">
+                    <a href="#" class="mobile-nav-link" onclick="toggleMobileDropdown(this); return false;">
+                        <span><i class="fas fa-cog"></i> Settings</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="mobile-dropdown">
+                        <a href="timetable.php"><i class="fas fa-clock"></i> Timetable</a>
+                        <a href="public-holidays.php"><i class="fas fa-calendar-day"></i> Public Holidays</a>
+                        <a href="teacher-profile.php"><i class="fas fa-chalkboard-teacher"></i> Teacher Profile</a>
+                        <a href="school-info.php"><i class="fas fa-school"></i> School Info</a>
                     </div>
                 </div>
             </div>
@@ -888,299 +1216,44 @@ if ($current_term) {
 
         <!-- Main Dashboard Grid -->
         <div class="dashboard-grid">
-          <!-- Today's Schedule Card -->
-<div class="dashboard-card">
-    <div class="card-header">
-        <h2><i class="fas fa-clock"></i> Today's Schedule - <?php echo date('l'); ?></h2>
-        <a href="timetable.php" class="view-link">
-            Full Timetable <i class="fas fa-arrow-right"></i>
-        </a>
-    </div>
-    <div class="schedule-list">
-        <?php
-        $today = date('l'); // Monday, Tuesday, etc.
-        
-        // Define the complete daily routine (same for all days)
-        $daily_routine = [
-            ['time' => '6:00 AM', 'activity' => 'Morning Prep', 'type' => 'prep', 'badge' => 'Prep', 'color' => '#FF9800'],
-            ['time' => '7:20 AM', 'activity' => 'Morning Tea', 'type' => 'break', 'badge' => 'Tea', 'color' => '#FFB800'],
-        ];
-        
-        // Assembly only on Monday and Wednesday
-        if ($today == 'Monday' || $today == 'Wednesday') {
-            $daily_routine[] = ['time' => '7:50 AM', 'activity' => 'Assembly', 'type' => 'assembly', 'badge' => 'ASS', 'color' => '#9C27B0'];
-        } else {
-            $daily_routine[] = ['time' => '7:50 AM', 'activity' => 'Period', 'type' => 'period', 'badge' => 'Period', 'color' => '#4B1C3C'];
-        }
-        
-        // Add all periods based on the day
-        $periods = [
-            'Monday' => [
-                ['time' => '8:30 AM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 1],
-                ['time' => '9:30 AM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 2],
-                ['time' => '11:00 AM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 3],
-                ['time' => '12:00 PM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 4],
-                ['time' => '1:40 PM', 'subject' => 'Computer', 'teacher' => 'Mr. Nelson', 'period' => 5],
-                ['time' => '2:50 PM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 6]
-            ],
-            'Tuesday' => [
-                ['time' => '7:50 AM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 0],
-                ['time' => '8:30 AM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 1],
-                ['time' => '9:30 AM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 2],
-                ['time' => '11:00 AM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 3],
-                ['time' => '12:00 PM', 'subject' => 'Religious Education', 'teacher' => 'Mr. Opio', 'period' => 4],
-                ['time' => '1:40 PM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 5],
-                ['time' => '2:50 PM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 6]
-            ],
-            'Wednesday' => [
-                ['time' => '8:30 AM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 1],
-                ['time' => '9:30 AM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 2],
-                ['time' => '11:00 AM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 3],
-                ['time' => '12:00 PM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 4],
-                ['time' => '1:40 PM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 5],
-                ['time' => '2:50 PM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 6]
-            ],
-            'Thursday' => [
-                ['time' => '7:50 AM', 'subject' => 'Physical Education', 'teacher' => '', 'period' => 0],
-                ['time' => '8:30 AM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 1],
-                ['time' => '9:30 AM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 2],
-                ['time' => '11:00 AM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 3],
-                ['time' => '12:00 PM', 'subject' => 'Music', 'teacher' => 'Mr. Dean', 'period' => 4],
-                ['time' => '1:40 PM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 5],
-                ['time' => '2:50 PM', 'subject' => 'Religious Education', 'teacher' => 'Mr. Opio', 'period' => 6]
-            ],
-            'Friday' => [
-                ['time' => '7:50 AM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 0],
-                ['time' => '8:30 AM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 1],
-                ['time' => '9:30 AM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 2],
-                ['time' => '11:00 AM', 'subject' => 'Music', 'teacher' => 'Mr. Dean', 'period' => 3],
-                ['time' => '12:00 PM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 4],
-                ['time' => '1:40 PM', 'subject' => 'Debate & Quiz', 'teacher' => '', 'period' => 5]
-            ],
-            'Saturday' => [
-                ['time' => '7:50 AM', 'subject' => 'Cleaning', 'teacher' => '', 'period' => 0],
-                ['time' => '8:30 AM', 'subject' => 'Social Studies', 'teacher' => 'Mr. Opio', 'period' => 1],
-                ['time' => '9:30 AM', 'subject' => 'Science', 'teacher' => 'Mr. Amos', 'period' => 2],
-                ['time' => '11:00 AM', 'subject' => 'Mathematics', 'teacher' => 'Mr. Rogers', 'period' => 3],
-                ['time' => '12:00 PM', 'subject' => 'English', 'teacher' => 'Miss Grace', 'period' => 4],
-                ['time' => '1:40 PM', 'subject' => 'Free Activity', 'teacher' => '', 'period' => 5]
-            ]
-        ];
-        
-        // Break times (same every day)
-        $breaks = [
-            ['time' => '10:30 AM', 'activity' => 'Break Time', 'badge' => 'Break', 'color' => '#FFB800'],
-            ['time' => '1:00 PM', 'activity' => 'Lunch Break', 'badge' => 'Lunch', 'color' => '#4CAF50']
-        ];
-        
-        // Afternoon routine (same every day)
-        $afternoon = [
-            ['time' => '3:40 PM', 'activity' => 'Homework Period', 'badge' => 'Homework', 'color' => '#FF9800'],
-            ['time' => '4:00 PM', 'activity' => 'Cleaning', 'badge' => 'Clean', 'color' => '#03A9F4'],
-            ['time' => '4:20 PM', 'activity' => 'Music, Dance & Drama / Games', 'badge' => 'MDD', 'color' => '#E91E63'],
-            ['time' => '5:20 PM', 'activity' => 'Personal Administration (Washing)', 'badge' => 'Admin', 'color' => '#3F51B5'],
-            ['time' => '6:00 PM', 'activity' => 'Evening Prayers', 'badge' => 'Prayers', 'color' => '#009688'],
-        ];
-        
-        // Evening prep (different subject each day)
-        $prep_subjects = [
-            'Monday' => 'SST (Mr. Opio)',
-            'Tuesday' => 'English (Miss Grace)',
-            'Wednesday' => 'Science (Mr. Amos)',
-            'Thursday' => 'Social Studies (Mr. Opio)',
-            'Friday' => 'Mathematics (Mr. Rogers)',
-            'Saturday' => 'General Prep'
-        ];
-        
-        $afternoon[] = ['time' => '6:30 PM', 'activity' => 'Evening Prep - ' . $prep_subjects[$today], 'badge' => 'Prep', 'color' => '#FF9800'];
-        
-        // Night routine (same every day)
-        $night = [
-            ['time' => '7:30 PM', 'activity' => 'Supper', 'badge' => 'Supper', 'color' => '#8BC34A'],
-            ['time' => '8:00 PM', 'activity' => 'Night Prep', 'badge' => 'Study', 'color' => '#FF9800'],
-            ['time' => '9:30 PM', 'activity' => 'Lights Out', 'badge' => '🌙', 'color' => '#212121']
-        ];
-        
-        // Display Morning Prep and Tea
-        echo '<div class="schedule-item prep-item" style="background: #fff8e1;">';
-        echo '<span class="schedule-time">6:00 AM</span>';
-        echo '<span class="schedule-subject">Morning Prep</span>';
-        echo '<span class="schedule-badge" style="background-color: #FF9800; color: white;">Prep</span>';
-        echo '</div>';
-        
-        echo '<div class="schedule-item break-item">';
-        echo '<span class="schedule-time">7:20 AM</span>';
-        echo '<span class="schedule-subject">Morning Tea</span>';
-        echo '<span class="schedule-badge" style="background-color: #FFB800; color: #4a1a3a;">Tea</span>';
-        echo '</div>';
-        
-        // Display Assembly or first period based on day
-        if ($today == 'Monday' || $today == 'Wednesday') {
-            echo '<div class="schedule-item assembly-item" style="background: #f3e5f5;">';
-            echo '<span class="schedule-time">7:50 AM</span>';
-            echo '<span class="schedule-subject">Assembly</span>';
-            echo '<span class="schedule-badge" style="background-color: #9C27B0; color: white;">ASS</span>';
-            echo '</div>';
-        }
-        
-        // Display all periods for today
-        if (isset($periods[$today])) {
-            foreach ($periods[$today] as $period) {
-                $bg_color = ($period['period'] == 0) ? '#e0e0e0' : '';
-                echo '<div class="schedule-item" style="' . $bg_color . '">';
-                echo '<span class="schedule-time">' . $period['time'] . '</span>';
-                echo '<span class="schedule-subject">' . $period['subject'];
-                if (!empty($period['teacher'])) {
-                    echo '<small style="display: block; color: #ef5b2b; font-size: 0.8rem;">' . $period['teacher'] . '</small>';
-                }
-                echo '</span>';
-                if ($period['period'] > 0) {
-                    echo '<span class="schedule-badge">Period ' . $period['period'] . '</span>';
-                } else {
-                    echo '<span class="schedule-badge" style="background-color: #757575;">Extra</span>';
-                }
-                echo '</div>';
-            }
-        }
-        
-        // Display Break
-        echo '<div class="schedule-item break-item">';
-        echo '<span class="schedule-time">10:30 AM</span>';
-        echo '<span class="schedule-subject">Break Time</span>';
-        echo '<span class="schedule-badge" style="background-color: #FFB800; color: #4a1a3a;">Break</span>';
-        echo '</div>';
-        
-        // Display Lunch
-        echo '<div class="schedule-item lunch-item" style="background: #e8f5e9;">';
-        echo '<span class="schedule-time">1:00 PM</span>';
-        echo '<span class="schedule-subject">Lunch Break</span>';
-        echo '<span class="schedule-badge" style="background-color: #4CAF50; color: white;">Lunch</span>';
-        echo '</div>';
-        
-        // Display Afternoon activities
-        echo '<div class="schedule-item homework-item" style="background: #fff8e1;">';
-        echo '<span class="schedule-time">3:40 PM</span>';
-        echo '<span class="schedule-subject">Homework Period</span>';
-        echo '<span class="schedule-badge" style="background-color: #FF9800; color: white;">Homework</span>';
-        echo '</div>';
-        
-        echo '<div class="schedule-item cleaning-item" style="background: #e1f5fe;">';
-        echo '<span class="schedule-time">4:00 PM</span>';
-        echo '<span class="schedule-subject">Cleaning</span>';
-        echo '<span class="schedule-badge" style="background-color: #03A9F4; color: white;">Clean</span>';
-        echo '</div>';
-        
-        echo '<div class="schedule-item mdd-item" style="background: #fce4ec;">';
-        echo '<span class="schedule-time">4:20 PM</span>';
-        echo '<span class="schedule-subject">Music, Dance & Drama / Games</span>';
-        echo '<span class="schedule-badge" style="background-color: #E91E63; color: white;">MDD</span>';
-        echo '</div>';
-        
-        echo '<div class="schedule-item admin-item" style="background: #e8eaf6;">';
-        echo '<span class="schedule-time">5:20 PM</span>';
-        echo '<span class="schedule-subject">Personal Administration (Washing)</span>';
-        echo '<span class="schedule-badge" style="background-color: #3F51B5; color: white;">Admin</span>';
-        echo '</div>';
-        
-        echo '<div class="schedule-item prayer-item" style="background: #e0f2f1;">';
-        echo '<span class="schedule-time">6:00 PM</span>';
-        echo '<span class="schedule-subject">Evening Prayers</span>';
-        echo '<span class="schedule-badge" style="background-color: #009688; color: white;">Prayers</span>';
-        echo '</div>';
-        
-        // Display Evening Prep with correct subject
-        echo '<div class="schedule-item prep-item" style="background: #fff8e1;">';
-        echo '<span class="schedule-time">6:30 PM</span>';
-        echo '<span class="schedule-subject">Evening Prep - ' . $prep_subjects[$today] . '</span>';
-        echo '<span class="schedule-badge" style="background-color: #FF9800; color: white;">Prep</span>';
-        echo '</div>';
-        
-        // Display Supper
-        echo '<div class="schedule-item supper-item" style="background: #f1f8e9;">';
-        echo '<span class="schedule-time">7:30 PM</span>';
-        echo '<span class="schedule-subject">Supper</span>';
-        echo '<span class="schedule-badge" style="background-color: #8BC34A; color: white;">Supper</span>';
-        echo '</div>';
-        
-        // Display Night Prep
-        echo '<div class="schedule-item nightprep-item" style="background: #fff8e1;">';
-        echo '<span class="schedule-time">8:00 PM</span>';
-        echo '<span class="schedule-subject">Night Prep</span>';
-        echo '<span class="schedule-badge" style="background-color: #FF9800; color: white;">Study</span>';
-        echo '</div>';
-        
-        // Display Lights Out
-        echo '<div class="schedule-item lights-item" style="background: #212121;">';
-        echo '<span class="schedule-time" style="color: white;">9:30 PM</span>';
-        echo '<span class="schedule-subject" style="color: white;">Lights Out</span>';
-        echo '<span class="schedule-badge" style="background-color: #000; color: white;">🌙</span>';
-        echo '</div>';
-        ?>
-    </div>
-
-    <!-- Boarding Schedule Summary -->
-    <?php if ($boarders > 0): ?>
-    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px dashed #e0d0e0;">
-        <div style="display: flex; gap: 10px; align-items: center; color: #4a1a3a;">
-            <i class="fas fa-moon"></i>
-            <span style="font-weight: 600;">Boarding Schedule:</span>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-            <span class="status-badge status-present"><i class="fas fa-pray"></i> 6:00 PM Prayers</span>
-            <span class="status-badge status-present"><i class="fas fa-book"></i> 6:30 PM Prep</span>
-            <span class="status-badge status-departed"><i class="fas fa-bed"></i> 9:30 PM Lights Out</span>
-        </div>
-    </div>
-    <?php endif; ?>
-</div>
-            <!-- Quick Actions Card -->
+            <!-- Today's Schedule Card -->
             <div class="dashboard-card">
                 <div class="card-header">
-                    <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                    <h2><i class="fas fa-clock"></i> Today's Schedule - <?php echo date('l'); ?></h2>
+                    <a href="timetable.php" class="view-link">
+                        Full Timetable <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                <div class="action-grid">
-                    <a href="attendance.php" class="action-card">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Roll Call</span>
-                    </a>
-                    <a href="students.php" class="action-card">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Students</span>
-                    </a>
-                    <a href="assessments.php" class="action-card">
-                        <i class="fas fa-pencil-alt"></i>
-                        <span>Marks</span>
-                    </a>
-                    <a href="behavior.php" class="action-card">
-                        <i class="fas fa-smile"></i>
-                        <span>Behavior</span>
-                    </a>
-                    <a href="communication.php" class="action-card">
-                        <i class="fas fa-comments"></i>
-                        <span>Parents</span>
-                    </a>
-                    <a href="boarding.php" class="action-card">
-                        <i class="fas fa-bed"></i>
-                        <span>Boarders</span>
-                    </a>
-                    <a href="visitation.php" class="action-card">
-                        <i class="fas fa-users"></i>
-                        <span>Visitation</span>
-                    </a>
-                    <a href="soccer.php" class="action-card">
-                        <i class="fas fa-futbol"></i>
-                        <span>Soccer</span>
-                    </a>
-                    <a href="reports.php" class="action-card">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>Reports</span>
-                    </a>
+                <div class="schedule-list">
+                    <?php
+                    // Simplified schedule for brevity (you can keep your original dynamic code)
+                    echo '<div class="schedule-item prep-item" style="background: #fff8e1;">';
+                    echo '<span class="schedule-time">6:00 AM</span>';
+                    echo '<span class="schedule-subject">Morning Prep</span>';
+                    echo '<span class="schedule-badge" style="background-color: #FF9800; color: white;">Prep</span>';
+                    echo '</div>';
+                    
+                    echo '<div class="schedule-item break-item">';
+                    echo '<span class="schedule-time">7:20 AM</span>';
+                    echo '<span class="schedule-subject">Morning Tea</span>';
+                    echo '<span class="schedule-badge" style="background-color: #FFB800; color: #4a1a3a;">Tea</span>';
+                    echo '</div>';
+                    
+                    echo '<div class="schedule-item">';
+                    echo '<span class="schedule-time">8:30 AM</span>';
+                    echo '<span class="schedule-subject">Mathematics</span>';
+                    echo '<span class="schedule-badge">Period 1</span>';
+                    echo '</div>';
+                    
+                    echo '<div class="schedule-item">';
+                    echo '<span class="schedule-time">9:30 AM</span>';
+                    echo '<span class="schedule-subject">Science</span>';
+                    echo '<span class="schedule-badge">Period 2</span>';
+                    echo '</div>';
+                    ?>
                 </div>
             </div>
-        </div>
 
-        <!-- Second Row -->
-        <div class="dashboard-grid">
             <!-- Recent Students Card -->
             <div class="dashboard-card">
                 <div class="card-header">
@@ -1211,7 +1284,10 @@ if ($current_term) {
                     <?php endforeach; ?>
                 </div>
             </div>
+        </div>
 
+        <!-- Second Row -->
+        <div class="dashboard-grid">
             <!-- Upcoming Events Card -->
             <div class="dashboard-card">
                 <div class="card-header">
@@ -1346,6 +1422,39 @@ if ($current_term) {
             const modal = document.getElementById('uploadModal');
             if (event.target == modal) {
                 modal.classList.remove('active');
+            }
+        }
+
+        // ========== MOBILE MENU ==========
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navOverlay = document.getElementById('navOverlay');
+        const mobileClose = document.getElementById('mobileClose');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('show');
+            navOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden'; // prevent scrolling
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('show');
+            navOverlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        navToggle.addEventListener('click', openMobileMenu);
+        mobileClose.addEventListener('click', closeMobileMenu);
+        navOverlay.addEventListener('click', closeMobileMenu);
+
+        // Mobile dropdown toggle
+        function toggleMobileDropdown(element) {
+            const dropdown = element.nextElementSibling;
+            dropdown.classList.toggle('show');
+            // rotate chevron
+            const icon = element.querySelector('.fa-chevron-down');
+            if (icon) {
+                icon.style.transform = dropdown.classList.contains('show') ? 'rotate(180deg)' : '';
             }
         }
     </script>

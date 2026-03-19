@@ -536,186 +536,185 @@ $boarders = array_filter($students, function($s) { return $s['student_type'] == 
             font-size: 2rem;
         }
 
-        /* Student Gallery */
-        .student-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
-        }
+       /* Student Gallery */
+.student-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
 
-        .student-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            border: 1px solid rgba(74, 26, 58, 0.1);
-            position: relative;
-        }
+.student-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    border: 1px solid rgba(74, 26, 58, 0.1);
+    position: relative;
+}
 
-        .student-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--orange);
-        }
+.student-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--orange);
+}
 
-        .student-photo {
-            height: 180px;
-            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+.student-photo {
+    height: 240px; /* Increased height for better visibility */
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 4px solid var(--orange); /* Accent line */
+}
 
-        .student-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
+.student-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers area without distortion */
+    transition: transform 0.3s ease;
+}
 
-        .student-card:hover .student-photo img {
-            transform: scale(1.05);
-        }
+.student-card:hover .student-photo img {
+    transform: scale(1.05);
+}
 
-        .student-photo-placeholder {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: 700;
-            color: white;
-            border: 4px solid rgba(255,255,255,0.3);
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            z-index: 1;
-        }
+.student-photo-placeholder {
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    font-weight: 700;
+    color: white;
+    border: 4px solid rgba(255,255,255,0.3);
+    box-shadow: var(--shadow-lg);
+}
 
-        .student-type-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255,255,255,0.95);
-            color: var(--purple-dark);
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            box-shadow: var(--shadow-md);
-            border: 1px solid rgba(239,91,43,0.3);
-            z-index: 2;
-        }
+.student-type-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.95);
+    color: var(--purple-dark);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(239,91,43,0.3);
+    z-index: 2;
+}
 
-        .student-info {
-            padding: 20px;
-            background: white;
-        }
+.student-info {
+    padding: 20px;
+    background: white;
+}
 
-        .student-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--purple-dark);
-            margin-bottom: 4px;
-        }
+.student-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+    margin-bottom: 4px;
+}
 
-        .student-admission {
-            color: var(--gray-500);
-            font-size: 0.85rem;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+.student-admission {
+    color: var(--gray-500);
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-        .student-admission i {
-            color: var(--orange);
-        }
+.student-admission i {
+    color: var(--orange);
+}
 
-        .student-detail {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            color: var(--gray-700);
-            font-size: 0.95rem;
-            border-bottom: 1px dashed var(--gray-200);
-        }
+.student-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    color: var(--gray-700);
+    font-size: 0.95rem;
+    border-bottom: 1px dashed var(--gray-200);
+}
 
-        .student-detail i {
-            color: var(--orange);
-            width: 20px;
-        }
+.student-detail i {
+    color: var(--orange);
+    width: 20px;
+}
 
-        .soccer-badge {
-            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-            color: white;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-block;
-            margin-top: 8px;
-            box-shadow: 0 2px 8px rgba(239,91,43,0.3);
-        }
+.soccer-badge {
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    color: white;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: 8px;
+    box-shadow: 0 2px 8px rgba(239,91,43,0.3);
+}
 
-        .student-actions {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 2px solid var(--gray-200);
-        }
+.student-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px solid var(--gray-200);
+}
 
-        .action-btn {
-            padding: 8px 6px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            transition: var(--transition);
-            text-decoration: none;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+.action-btn {
+    padding: 8px 6px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: var(--transition);
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-        .action-btn i {
-            font-size: 0.9rem;
-        }
+.action-btn i {
+    font-size: 0.9rem;
+}
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(110%);
-        }
+.action-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(110%);
+}
 
-        .btn-view {
-            background: linear-gradient(135deg, var(--info), #2980b9);
-        }
+.btn-view {
+    background: linear-gradient(135deg, var(--info), #2980b9);
+}
 
-        .btn-edit {
-            background: linear-gradient(135deg, var(--success), #219a52);
-        }
+.btn-edit {
+    background: linear-gradient(135deg, var(--success), #219a52);
+}
 
-        .btn-photo {
-            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-        }
+.btn-photo {
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+}
 
-        .btn-delete {
-            background: linear-gradient(135deg, var(--danger), #c0392b);
-        }
+.btn-delete {
+    background: linear-gradient(135deg, var(--danger), #c0392b);
+}
 
         /* No Results */
         .no-results {
@@ -918,10 +917,9 @@ $boarders = array_filter($students, function($s) { return $s['student_type'] == 
                         <?php echo $total_students; ?> Active Students • P.5 Purple
                     </div>
                 </div>
-                <div class="class-badge">
-                    <button class="btn-premium btn-add" onclick="openAddModal()">
-                        <i class="fas fa-user-plus"></i> Add Student
-                    </button>
+                <a href="add-student.php" class="btn-premium btn-add">
+    <i class="fas fa-user-plus"></i> Add Student
+</a>    
                     <a href="upload-student-photo.php" class="btn-premium">
                         <i class="fas fa-camera"></i> Photos
                     </a>

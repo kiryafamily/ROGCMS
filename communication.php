@@ -937,10 +937,13 @@ $history = array_filter($communications, function($c) { return !$c['follow_up_re
                         <i class="fas fa-quote-left"></i> Building Strong Home-School Partnerships <i class="fas fa-quote-right"></i>
                     </div>
                 </div>
-                <div class="school-badge">
+                    <div class="school-badge">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-graduation-cap"></i>
                     RAYS OF GRACE
+                    <div class="school-badge">
+                    <a href="index.php" class="btn-premium"><i class="fas fa-arrow-left"></i> Back</a>
+                    </div>
                 </div>
             </div>
         </div>
