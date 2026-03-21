@@ -106,29 +106,32 @@ function sendWhatsAppMessage($phone, $message) {
 }
 
 // ============================================
-// SEND SMS FUNCTION (Africa's Talking) - FULLY FUNCTIONAL
+// SEND SMS FUNCTION (Africa's Talking) - WORKING
 // ============================================
 function sendSMS($phone, $message) {
-    // Africa's Talking API Configuration
-    // You need to replace these with your actual credentials from Africa's Talking
-    $username = 'sandbox'; // Change to your username (use 'sandbox' for testing)
-    $api_key = 'your_api_key_here'; // Replace with your actual API key
-    
-    // If using sandbox, you can leave as is, but for production you need real credentials
-    if ($api_key == 'your_api_key_here') {
-        return ['success' => false, 'message' => 'Please configure your Africa\'s Talking API credentials in the code.'];
+    $username = 'sandbox';
+    $api_key = 'API_KEY'; // Replace with your actual API key
+    if (strpos($api_key, 'atsk_') !== 0) {
+        return ['success' => false, 'message' => 'Invalid API key format. Please check your Africa\'s Talking API credentials.'];
     }
     
-    // Clean phone number
     $phone = preg_replace('/[^0-9]/', '', $phone);
-    
-    // Ensure phone has country code
+
     if (substr($phone, 0, 1) == '0') {
         $phone = '256' . substr($phone, 1);
     } elseif (substr($phone, 0, 3) != '256' && strlen($phone) == 9) {
         $phone = '256' . $phone;
     }
+
+    if (empty($phone) || strlen($phone) < 10) {
+        return ['success' => false, 'message' => 'Invalid phone number format.'];
+    }
+
+    if (strlen($message) > 160) {
+        $message = substr($message, 0, 157) . '...';
+    }
     
+    // Africa's Talking API endpoint
     $url = "https://api.africastalking.com/version1/messaging";
     
     $data = [
@@ -138,6 +141,7 @@ function sendSMS($phone, $message) {
         'from' => 'RAYSGRACE'
     ];
     
+    // Initialize cURL
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -148,7 +152,7 @@ function sendSMS($phone, $message) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: application/json',
         'Content-Type: application/x-www-form-urlencoded',
-        'apiKey: ' . $api_key
+        'ApiKey: ' . $api_key
     ]);
     
     $response = curl_exec($ch);
@@ -156,17 +160,23 @@ function sendSMS($phone, $message) {
     $curl_error = curl_error($ch);
     curl_close($ch);
     
-    if ($http_code == 201 || $http_code == 200) {
+    // Check response
+    if ($http_code == 200 || $http_code == 201) {
         $result = json_decode($response, true);
-        if (isset($result['SMSMessageData']['Recipients'][0]['status']) && 
-            $result['SMSMessageData']['Recipients'][0]['status'] == 'Success') {
-            return ['success' => true, 'message' => 'SMS sent successfully'];
-        } else {
-            return ['success' => false, 'message' => 'SMS sending failed: ' . ($result['SMSMessageData']['Recipients'][0]['status'] ?? 'Unknown error')];
+        if (isset($result['SMSMessageData']['Recipients'][0]['status'])) {
+            $status = $result['SMSMessageData']['Recipients'][0]['status'];
+            if ($status == 'Success') {
+                return ['success' => true, 'message' => 'SMS sent successfully to ' . $phone];
+            } else {
+                $reason = $result['SMSMessageData']['Recipients'][0]['status'] ?? 'Unknown error';
+                return ['success' => false, 'message' => 'SMS failed: ' . $reason];
+            }
         }
+    } elseif ($http_code == 401) {
+        return ['success' => false, 'message' => 'Invalid API key. Please check your Africa\'s Talking API credentials.'];
     }
     
-    return ['success' => false, 'message' => 'Failed to send SMS: HTTP ' . $http_code . ' - ' . $curl_error];
+    return ['success' => false, 'message' => 'Failed to send SMS. HTTP: ' . $http_code . ' - ' . $curl_error];
 }
 
 // ============================================
@@ -415,8 +425,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_sms'])) {
     $message_text = $_POST['sms_text'];
     $parent_name = $_POST['parent_name'];
     
-    // Format SMS with school info (keeping within 160 chars)
-    $formatted_message = "Rays of Grace: " . $message_text;
+    // Get student name
+    $stmt = $pdo->prepare("SELECT full_name FROM students WHERE id = ?");
+    $stmt->execute([$student_id]);
+    $student = $stmt->fetch();
+    $student_name = $student['full_name'] ?? 'Student';
+    
+    // Format SMS message (keep within 160 chars)
+    $formatted_message = "Rays of Grace: Dear parent of " . $student_name . ". " . $message_text;
+    
+    // Truncate if too long (max 160 chars)
+    if (strlen($formatted_message) > 160) {
+        $formatted_message = substr($formatted_message, 0, 157) . '...';
+    }
     
     $result = sendSMS($phone, $formatted_message);
     
