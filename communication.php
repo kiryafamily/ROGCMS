@@ -2,6 +2,15 @@
 session_start();
 require_once 'includes/config.php';
 
+// Require PHPMailer files
+require_once 'includes/PHPMailer/src/Exception.php';
+require_once 'includes/PHPMailer/src/PHPMailer.php';
+require_once 'includes/PHPMailer/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 // PROTECT THIS PAGE
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -35,12 +44,12 @@ $students = $pdo->query("
 ")->fetchAll();
 
 // ============================================
-// SEND WHATSAPP MESSAGE FUNCTION (UltraMsg) - IMPROVED
+// SEND WHATSAPP MESSAGE FUNCTION (UltraMsg) - FULLY FUNCTIONAL
 // ============================================
 function sendWhatsAppMessage($phone, $message) {
-    // UltraMsg API Configuration - YOUR CREDENTIALS
-    $token = 'u1r28xma3d0ir71a';
-    $instance_id = '165224';
+    // UltraMsg API Configuration
+    $token = 'bm2fq2ugf232l2wl';
+    $instance_id = 'instance166612';
     
     // Clean phone number - remove any non-numeric characters
     $phone = preg_replace('/[^0-9]/', '', $phone);
@@ -48,72 +57,67 @@ function sendWhatsAppMessage($phone, $message) {
     // Ensure phone has country code (256 for Uganda)
     if (substr($phone, 0, 1) == '0') {
         $phone = '256' . substr($phone, 1);
-    } elseif (substr($phone, 0, 3) != '256') {
+    } elseif (substr($phone, 0, 3) != '256' && strlen($phone) == 9) {
         $phone = '256' . $phone;
+    } elseif (substr($phone, 0, 3) != '256' && strlen($phone) == 12) {
+        // Already has country code
     }
     
     // UltraMsg API endpoint
+    //https://api.ultramsg.com/instance166612/
     $url = "https://api.ultramsg.com/" . $instance_id . "/messages/chat";
     
     $data = [
         'token' => $token,
         'to' => $phone,
         'body' => $message,
-        'priority' => 10
+        'priority' => 10,
+        'referenceId' => 'parent_communication_' . time()
     ];
     
-    // Initialize cURL with better error handling
+    // Initialize cURL
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Add timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/x-www-form-urlencoded'
+    ]);
     
     $response = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curl_error = curl_error($ch);
     curl_close($ch);
     
-    // Log for debugging (remove in production)
-    error_log("WhatsApp API - Phone: $phone, HTTP Code: $http_code");
-    error_log("WhatsApp API - Response: $response");
-    if ($curl_error) {
-        error_log("WhatsApp API - cURL Error: $curl_error");
-    }
-    
     // Check if successful
-    if ($http_code == 200) {
+    if ($http_code == 200 && $response) {
         $result = json_decode($response, true);
         if (isset($result['sent']) && $result['sent'] == 'true') {
-            return true;
+            return ['success' => true, 'message' => 'WhatsApp message sent successfully'];
+        } elseif (isset($result['error'])) {
+            return ['success' => false, 'message' => 'API Error: ' . $result['error']];
         }
     }
     
-    return false;
+    return ['success' => false, 'message' => 'Failed to send: HTTP ' . $http_code . ' - ' . $curl_error];
 }
 
 // ============================================
-// SEND EMAIL FUNCTION (PHP mail)
-// ============================================
-function sendEmail($to, $subject, $message) {
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: Rays of Grace Junior School <reports@raysofgrace.com>' . "\r\n";
-    
-    $html_message = nl2br($message);
-    
-    return mail($to, $subject, $html_message, $headers);
-}
-
-// ============================================
-// SEND SMS FUNCTION (Africa's Talking)
+// SEND SMS FUNCTION (Africa's Talking) - FULLY FUNCTIONAL
 // ============================================
 function sendSMS($phone, $message) {
-    // Africa's Talking API - REPLACE WITH YOUR CREDENTIALS
-    $username = 'sandbox';
-    $api_key = 'your_api_key';
+    // Africa's Talking API Configuration
+    // You need to replace these with your actual credentials from Africa's Talking
+    $username = 'sandbox'; // Change to your username (use 'sandbox' for testing)
+    $api_key = 'your_api_key_here'; // Replace with your actual API key
+    
+    // If using sandbox, you can leave as is, but for production you need real credentials
+    if ($api_key == 'your_api_key_here') {
+        return ['success' => false, 'message' => 'Please configure your Africa\'s Talking API credentials in the code.'];
+    }
     
     // Clean phone number
     $phone = preg_replace('/[^0-9]/', '', $phone);
@@ -121,7 +125,7 @@ function sendSMS($phone, $message) {
     // Ensure phone has country code
     if (substr($phone, 0, 1) == '0') {
         $phone = '256' . substr($phone, 1);
-    } elseif (substr($phone, 0, 3) != '256') {
+    } elseif (substr($phone, 0, 3) != '256' && strlen($phone) == 9) {
         $phone = '256' . $phone;
     }
     
@@ -139,6 +143,8 @@ function sendSMS($phone, $message) {
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: application/json',
         'Content-Type: application/x-www-form-urlencoded',
@@ -147,9 +153,172 @@ function sendSMS($phone, $message) {
     
     $response = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
     curl_close($ch);
     
-    return $http_code == 201;
+    if ($http_code == 201 || $http_code == 200) {
+        $result = json_decode($response, true);
+        if (isset($result['SMSMessageData']['Recipients'][0]['status']) && 
+            $result['SMSMessageData']['Recipients'][0]['status'] == 'Success') {
+            return ['success' => true, 'message' => 'SMS sent successfully'];
+        } else {
+            return ['success' => false, 'message' => 'SMS sending failed: ' . ($result['SMSMessageData']['Recipients'][0]['status'] ?? 'Unknown error')];
+        }
+    }
+    
+    return ['success' => false, 'message' => 'Failed to send SMS: HTTP ' . $http_code . ' - ' . $curl_error];
+}
+
+// ============================================
+// SEND EMAIL FUNCTION (Namecheap Private Email - WITH PROPER HTML)
+// ============================================
+function sendEmail($to, $subject, $message) {
+    $mail = new PHPMailer(true);
+    
+    try {
+        // Server settings
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
+        $mail->isSMTP();
+        $mail->Host       = 'mail.privateemail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'info@raysofgrace.ac.ug';
+        $mail->Password   = 'Actual_Email_Password'; // Replace with your actual email password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+        
+        // Recipients
+        $mail->setFrom('info@raysofgrace.ac.ug', 'Rays of Grace Junior School');
+        $mail->addAddress($to);
+        $mail->addReplyTo('info@raysofgrace.ac.ug', 'Rays of Grace Junior School');
+        
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        
+        // PROPERLY STRUCTURED HTML EMAIL - FIXED
+        $html_body = '<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>' . htmlspecialchars($subject) . '</title>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    font-family: "Segoe UI", Arial, sans-serif;
+                    background-color: #f5f0f5;
+                }
+                .email-container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                }
+                .header {
+                    background: linear-gradient(135deg, #4B1C3C 0%, #36152B 100%);
+                    padding: 30px 20px;
+                    text-align: center;
+                    border-bottom: 4px solid #FFB800;
+                }
+                .header h1 {
+                    color: #FFB800;
+                    margin: 0;
+                    font-size: 28px;
+                    font-weight: 700;
+                    letter-spacing: -0.5px;
+                }
+                .header p {
+                    color: #ffffff;
+                    margin: 8px 0 0;
+                    font-size: 14px;
+                    opacity: 0.9;
+                }
+                .content {
+                    padding: 30px;
+                    background-color: #ffffff;
+                }
+                .message-box {
+                    background-color: #faf5fa;
+                    padding: 25px;
+                    border-radius: 12px;
+                    border-left: 4px solid #FFB800;
+                    line-height: 1.6;
+                    color: #333333;
+                }
+                .message-box p {
+                    margin: 0 0 15px 0;
+                }
+                .message-box p:last-child {
+                    margin-bottom: 0;
+                }
+                .footer {
+                    background-color: #4B1C3C;
+                    padding: 20px;
+                    text-align: center;
+                    font-size: 12px;
+                    color: #FFB800;
+                }
+                .footer p {
+                    margin: 5px 0;
+                }
+                .footer a {
+                    color: #FFB800;
+                    text-decoration: none;
+                }
+                .footer .copyright {
+                    margin-top: 10px;
+                    font-size: 11px;
+                    opacity: 0.7;
+                }
+                .signature {
+                    margin-top: 20px;
+                    padding-top: 15px;
+                    border-top: 1px solid #e0d0e0;
+                }
+            </style>
+        </head>
+        <body style="margin: 0; padding: 20px; background-color: #f5f0f5;">
+            <div class="email-container">
+                <div class="header">
+                    <h1>🏫 Rays of Grace Junior School</h1>
+                    <p>P.5 Purple - Class of Excellence</p>
+                </div>
+                <div class="content">
+                    <div class="message-box">
+                        ' . nl2br(htmlspecialchars($message)) . '
+                    </div>
+                    <div class="signature">
+                        <p style="margin: 5px 0;"><strong>Regards,</strong></p>
+                        <p style="margin: 5px 0;"><strong>Mr. Kirya Amos</strong></p>
+                        <p style="margin: 5px 0; color: #666;">Class Teacher - P.5 Purple</p>
+                        <p style="margin: 5px 0; color: #666;">Rays of Grace Junior School</p>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>📧 info@raysofgrace.ac.ug</p>
+                    <p>🏫 Rays of Grace Junior School - Where Great Minds Grow</p>
+                    <div class="copyright">
+                        <p>This is an automated message from the School Management System.</p>
+                        <p>Please do not reply to this email.</p>
+                        <p>&copy; ' . date('Y') . ' Rays of Grace Junior School. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>';
+        
+        $mail->Body = $html_body;
+        $mail->AltBody = strip_tags($message); // Plain text version
+        
+        $mail->send();
+        return ['success' => true, 'message' => 'Email sent successfully to ' . $to];
+        
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => 'Failed to send email. Error: ' . $mail->ErrorInfo];
+    }
 }
 
 // ============================================
@@ -163,9 +332,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_whatsapp'])) {
     $message_text = $_POST['message_text'];
     $parent_name = $_POST['parent_name'];
     
-    $sent = sendWhatsAppMessage($phone, $message_text);
+    // Get student name for the message
+    $stmt = $pdo->prepare("SELECT full_name FROM students WHERE id = ?");
+    $stmt->execute([$student_id]);
+    $student = $stmt->fetch();
+    $student_name = $student['full_name'] ?? 'Student';
     
-    // Log the communication - REMOVED status column
+    // Format message with school header
+    $formatted_message = "🏫 *Rays of Grace Junior School*\n\n";
+    $formatted_message .= "Dear parent to " . ($parent_name ?: 'Parent') . ",\n\n";
+    $formatted_message .= $message_text . "\n\n";
+    $formatted_message .= "Regards,\n";
+    $formatted_message .= "Class Teacher - P.5 Purple\n";
+    $formatted_message .= "Rays of Grace Junior School";
+    
+    $result = sendWhatsAppMessage($phone, $formatted_message);
+    
+    // Log the communication
     $stmt = $pdo->prepare("
         INSERT INTO parent_communication 
         (student_id, communication_date, term, year, parent_name, contact_method, purpose, notes)
@@ -173,11 +356,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_whatsapp'])) {
     ");
     $stmt->execute([$student_id, $current_term, ACADEMIC_YEAR, $parent_name, $message_text]);
     
-    if ($sent) {
-        $message = "✅ WhatsApp message sent successfully!";
+    if ($result['success']) {
+        $message = "✅ " . $result['message'];
         $message_type = "success";
     } else {
-        $message = "❌ Failed to send WhatsApp. Please check your API settings.";
+        $message = "❌ " . $result['message'];
         $message_type = "error";
     }
 }
@@ -190,9 +373,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_email'])) {
     $body = $_POST['email_body'];
     $parent_name = $_POST['parent_name'];
     
-    $sent = sendEmail($email, $subject, $body);
+    // Get student name for personalization
+    $stmt = $pdo->prepare("SELECT full_name FROM students WHERE id = ?");
+    $stmt->execute([$student_id]);
+    $student = $stmt->fetch();
+    $student_name = $student['full_name'] ?? 'Student';
     
-    // Log the communication - REMOVED status column
+    // Format the message with student and parent info
+    $formatted_message = "Dear " . ($parent_name ?: 'Parent') . " of " . $student_name . ",\n\n";
+    $formatted_message .= $body . "\n\n";
+    $formatted_message .= "---\n";
+    $formatted_message .= "Regards,\n";
+    $formatted_message .= "Mr. Kirya Amos\n";
+    $formatted_message .= "Class Teacher - P.5 Purple\n";
+    $formatted_message .= "Rays of Grace Junior School";
+    
+    // Send the email
+    $result = sendEmail($email, $subject, $formatted_message);
+    
+    // Log the communication
     $stmt = $pdo->prepare("
         INSERT INTO parent_communication 
         (student_id, communication_date, term, year, parent_name, contact_method, purpose, notes)
@@ -200,11 +399,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_email'])) {
     ");
     $stmt->execute([$student_id, $current_term, ACADEMIC_YEAR, $parent_name, $subject . "\n\n" . $body]);
     
-    if ($sent) {
-        $message = "✅ Email sent successfully!";
+    if ($result['success']) {
+        $message = "✅ " . $result['message'];
         $message_type = "success";
     } else {
-        $message = "❌ Failed to send email. Please check your mail settings.";
+        $message = "❌ " . $result['message'];
         $message_type = "error";
     }
 }
@@ -216,9 +415,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_sms'])) {
     $message_text = $_POST['sms_text'];
     $parent_name = $_POST['parent_name'];
     
-    $sent = sendSMS($phone, $message_text);
+    // Format SMS with school info (keeping within 160 chars)
+    $formatted_message = "Rays of Grace: " . $message_text;
     
-    // Log the communication - REMOVED status column
+    $result = sendSMS($phone, $formatted_message);
+    
+    // Log the communication
     $stmt = $pdo->prepare("
         INSERT INTO parent_communication 
         (student_id, communication_date, term, year, parent_name, contact_method, purpose, notes)
@@ -226,11 +428,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_sms'])) {
     ");
     $stmt->execute([$student_id, $current_term, ACADEMIC_YEAR, $parent_name, $message_text]);
     
-    if ($sent) {
-        $message = "✅ SMS sent successfully!";
+    if ($result['success']) {
+        $message = "✅ " . $result['message'];
         $message_type = "success";
     } else {
-        $message = "❌ Failed to send SMS. Please check your Africa's Talking settings.";
+        $message = "❌ " . $result['message'];
         $message_type = "error";
     }
 }
@@ -254,6 +456,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_communication']))
     if ($stmt->execute([$student_id, $current_term, ACADEMIC_YEAR, $parent_name, $contact_method, $purpose, $notes, $follow_up, $follow_up_date])) {
         $message = "Communication logged successfully!";
         $message_type = "success";
+    } else {
+        $message = "Failed to log communication.";
+        $message_type = "error";
     }
 }
 
@@ -291,6 +496,7 @@ $history = array_filter($communications, function($c) { return !$c['follow_up_re
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* All your existing CSS styles remain exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -1205,12 +1411,10 @@ $history = array_filter($communications, function($c) { return !$c['follow_up_re
                 padding: 10px;
             }
             
-            /* Hide desktop navigation on mobile */
             .main-nav {
                 display: none;
             }
             
-            /* Show mobile navigation at the top - sticky */
             .mobile-top-nav {
                 display: block;
                 margin-bottom: 15px;
@@ -1331,7 +1535,6 @@ $history = array_filter($communications, function($c) { return !$c['follow_up_re
             }
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
