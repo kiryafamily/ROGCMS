@@ -2,6 +2,9 @@
 session_start();
 require_once 'includes/config.php';
 
+// Include the communication functions
+require_once 'includes/communication_functions.php';
+
 // PROTECT THIS PAGE
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -17,7 +20,7 @@ $stmt = $pdo->prepare("SELECT * FROM public_holidays WHERE holiday_date = ?");
 $stmt->execute([$today]);
 $holiday = $stmt->fetch();
 
-// Define all roll call sessions (same as before)
+// Define all roll call sessions
 $sessions = [
     'morning_prep' => [
         'name' => 'Morning Prep',
@@ -63,7 +66,7 @@ $sessions = [
     ]
 ];
 
-// Determine active session (same as before)
+// Determine active session
 $current_hour = (int)date('H');
 $current_minute = (int)date('i');
 $current_time_decimal = $current_hour + $current_minute / 60;
@@ -86,13 +89,16 @@ foreach ($session_times as $key => $time) {
     }
 }
 
-// Handle form submission (same as before)
+// Handle form submission with parent notifications
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_attendance'])) {
     $session_key = $_POST['session_key'];
     $student_ids = $_POST['student_id'] ?? [];
     $statuses = $_POST['status'] ?? [];
     $times = $_POST['time'] ?? [];
     $notes = $_POST['notes'] ?? [];
+    
+    $notification_results = [];
+    $status_changes = [];
 
     foreach ($student_ids as $index => $student_id) {
         $status = $statuses[$index] ?? null;
@@ -101,6 +107,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_attendance'])) {
         $time = $times[$index] ?? null;
         $note = $notes[$index] ?? '';
 
+        // Get previous status to check if there's a change
+        $stmt = $pdo->prepare("SELECT status FROM attendance_records WHERE student_id = ? AND date = ? AND session = ?");
+        $stmt->execute([$student_id, $today, $session_key]);
+        $previous = $stmt->fetch();
+        $previous_status = $previous['status'] ?? null;
+        
+        // Check if status changed
+        $status_changed = ($previous_status !== $status && $previous_status !== null);
+        
         $stmt = $pdo->prepare("SELECT id FROM attendance_records WHERE student_id = ? AND date = ? AND session = ?");
         $stmt->execute([$student_id, $today, $session_key]);
         $existing = $stmt->fetch();
@@ -111,10 +126,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_attendance'])) {
         } else {
             $stmt = $pdo->prepare("INSERT INTO attendance_records (student_id, date, session, status, time, notes, taken_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$student_id, $today, $session_key, $status, $time, $note, $_SESSION['user_id']]);
+            $status_changed = true; // New record is a change
+        }
+        
+        // Send notification if status changed or is important (Absent/Late)
+        $important_statuses = ['Absent', 'Late'];
+        if ($status_changed || in_array($status, $important_statuses)) {
+            // Get student details with parent contact info - CORRECTED
+            $stmt = $pdo->prepare("SELECT id, full_name, parent_name, parent_phone, parent_email, student_type, soccer_academy 
+                                    FROM students 
+                                    WHERE id = ?");
+            $stmt->execute([$student_id]);
+            $student = $stmt->fetch();
+            
+            if ($student && ($student['parent_phone'] || $student['parent_email'])) {
+                $status_changes[] = [
+                    'student_id' => $student_id,
+                    'student_name' => $student['full_name'],
+                    'status' => $status,
+                    'session_name' => $sessions[$session_key]['name'],
+                    'session_time' => $sessions[$session_key]['time'],
+                    'parent_phone' => $student['parent_phone'],
+                    'parent_email' => $student['parent_email'],
+                    'parent_name' => $student['parent_name']
+                ];
+            }
         }
     }
-    $message = "Attendance for " . $sessions[$session_key]['name'] . " saved successfully!";
-    $message_type = "success";
+    
+    // Send notifications for status changes
+    if (!empty($status_changes)) {
+        foreach ($status_changes as $change) {
+            $notification_sent = false;
+            $notification_method = ''; // Always initialize as empty string
+            
+            // Prepare message
+            $attendance_message = "🏫 *Rays of Grace Junior School*\n\n";
+            $attendance_message .= "Dear parent of " . $change['student_name'] . ",\n\n";
+            $attendance_message .= "Attendance Update for " . $change['session_name'] . " (" . $change['session_time'] . "):\n";
+            $attendance_message .= "Status: *" . $change['status'] . "*\n\n";
+            
+            if ($change['status'] == 'Absent') {
+                $attendance_message .= "Please contact the school for more information.\n\n";
+            } elseif ($change['status'] == 'Late') {
+                $attendance_message .= "Please ensure timely arrival to school.\n\n";
+            } elseif ($change['status'] == 'Present') {
+                $attendance_message .= "Student is present and accounted for.\n\n";
+            }
+            
+            $attendance_message .= "Regards,\n";
+            $attendance_message .= "Class Teacher - P.5 Purple\n";
+            $attendance_message .= "Rays of Grace Junior School";
+            
+            $methods_sent = []; // Use an array to track methods
+            
+            // Try WhatsApp first if phone number exists
+            if (!empty($change['parent_phone']) && $change['parent_phone'] != '00000000000') {
+                $result = sendWhatsAppMessage($change['parent_phone'], $attendance_message);
+                if ($result['success']) {
+                    $notification_sent = true;
+                    $methods_sent[] = 'WhatsApp';
+                }
+            }
+            
+            // If WhatsApp failed or no phone, try SMS
+            if (!$notification_sent && !empty($change['parent_phone']) && $change['parent_phone'] != '00000000000') {
+                $sms_message = "Rays of Grace: " . $change['student_name'] . " - " . $change['session_name'] . ": " . $change['status'];
+                $result = sendSMS($change['parent_phone'], $sms_message);
+                if ($result['success']) {
+                    $notification_sent = true;
+                    $methods_sent[] = 'SMS';
+                }
+            }
+            
+            // Try email if available
+            if (!empty($change['parent_email'])) {
+                $email_subject = "Attendance Update - " . $change['student_name'] . " - " . $change['session_name'];
+                $email_body = "Dear " . ($change['parent_name'] ?: 'Parent') . ",\n\n";
+                $email_body .= "This is an attendance update for your child, " . $change['student_name'] . ".\n\n";
+                $email_body .= "Session: " . $change['session_name'] . " (" . $change['session_time'] . ")\n";
+                $email_body .= "Status: " . $change['status'] . "\n\n";
+                
+                if ($change['status'] == 'Absent') {
+                    $email_body .= "Please contact the school for more information.\n\n";
+                } elseif ($change['status'] == 'Late') {
+                    $email_body .= "Please ensure timely arrival to school.\n\n";
+                }
+                
+                $email_body .= "Regards,\n";
+                $email_body .= "Class Teacher - P.5 Purple\n";
+                $email_body .= "Rays of Grace Junior School";
+                
+                $result = sendEmail($change['parent_email'], $email_subject, $email_body);
+                if ($result['success']) {
+                    $notification_sent = true;
+                    $methods_sent[] = 'Email';
+                }
+            }
+            
+            // Convert methods array to string
+            $method_string = !empty($methods_sent) ? implode(' + ', $methods_sent) : '';
+            
+            // Log the notification
+            if ($notification_sent) {
+                $stmt = $pdo->prepare("
+                    INSERT INTO parent_communication 
+                    (student_id, communication_date, term, year, parent_name, contact_method, purpose, notes)
+                    VALUES (?, CURDATE(), ?, ?, ?, ?, 'Attendance Alert', ?)
+                ");
+                $stmt->execute([
+                    $change['student_id'], 
+                    $current_term, 
+                    ACADEMIC_YEAR, 
+                    $change['parent_name'] ?? '', 
+                    $method_string,
+                    "Attendance: " . $change['session_name'] . " - " . $change['status']
+                ]);
+            }
+        }
+        
+        $notification_count = count($status_changes);
+        if ($notification_count > 0) {
+            $message = "Attendance saved! " . $notification_count . " parent notification(s) sent.";
+        } else {
+            $message = "Attendance saved successfully!";
+        }
+    } else {
+        $message = "Attendance saved successfully!";
+    }
+    $message_type = 'success';  
 }
 
 // Get all active students
@@ -151,7 +291,7 @@ $recent_students = $pdo->query("SELECT id FROM students WHERE status = 'Active' 
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* ========== GLOBAL STYLES (same as index.php) ========== */
+        /* All your existing CSS styles remain exactly the same */
         * {
             margin: 0;
             padding: 0;

@@ -747,7 +747,81 @@ $nationalities = ['Ugandan', 'Kenyan', 'Tanzanian', 'Rwandan', 'South Sudanese',
                     </div>
                 </div>
                 
-                <!-- SECTION 2: RESIDENCE INFORMATION -->
+                <!-- SECTION 2: PARENT/GUARDIAN INFORMATION -->
+                <div class="form-section">
+                    <h2><i class="fas fa-users"></i> Parent/Guardian Information</h2>
+                    
+                    <h3><i class="fas fa-male"></i> Father's Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Father's Name</label>
+                            <input type="text" name="father_name" class="form-control" 
+                                   value="<?php echo $student['father_name']; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Father's Phone</label>
+                            <input type="text" name="father_phone" class="form-control" 
+                                   value="<?php echo $student['father_phone']; ?>" placeholder="256...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Father's Occupation</label>
+                            <input type="text" name="father_occupation" class="form-control" 
+                                   value="<?php echo $student['father_occupation']; ?>">
+                        </div>
+                    </div>
+                    
+                    <h3><i class="fas fa-female"></i> Mother's Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Mother's Name</label>
+                            <input type="text" name="mother_name" class="form-control" 
+                                   value="<?php echo $student['mother_name']; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Mother's Phone</label>
+                            <input type="text" name="mother_phone" class="form-control" 
+                                   value="<?php echo $student['mother_phone']; ?>" placeholder="256...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Mother's Occupation</label>
+                            <input type="text" name="mother_occupation" class="form-control" 
+                                   value="<?php echo $student['mother_occupation']; ?>">
+                        </div>
+                    </div>
+                    
+                    <h3><i class="fas fa-user-tie"></i> Contact Person</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" name="guardian_name" class="form-control" 
+                                   value="<?php echo $student['guardian_name']; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" name="guardian_phone" class="form-control" 
+                                   value="<?php echo $student['guardian_phone']; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Relationship</label>
+                            <input type="text" name="guardian_relationship" class="form-control" 
+                                   value="<?php echo $student['guardian_relationship']; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="parent_email" class="form-control" 
+                                   value="<?php echo $student['parent_email']; ?>">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: RESIDENCE INFORMATION -->
                 <div class="form-section">
                     <h2><i class="fas fa-home"></i> Residence Information</h2>
                     <div class="form-grid">
@@ -803,80 +877,6 @@ $nationalities = ['Ugandan', 'Kenyan', 'Tanzanian', 'Rwandan', 'South Sudanese',
                             <label><i class="fas fa-clock"></i> Travel Time (minutes)</label>
                             <input type="number" name="travel_time_minutes" class="form-control" 
                                    value="<?php echo $student['travel_time_minutes']; ?>" min="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- SECTION 3: PARENT/GUARDIAN INFORMATION -->
-                <div class="form-section">
-                    <h2><i class="fas fa-users"></i> Parent/Guardian Information</h2>
-                    
-                    <h3><i class="fas fa-male"></i> Father's Details</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Father's Name</label>
-                            <input type="text" name="father_name" class="form-control" 
-                                   value="<?php echo $student['father_name']; ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Father's Phone</label>
-                            <input type="text" name="father_phone" class="form-control" 
-                                   value="<?php echo $student['father_phone']; ?>" placeholder="256...">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Father's Occupation</label>
-                            <input type="text" name="father_occupation" class="form-control" 
-                                   value="<?php echo $student['father_occupation']; ?>">
-                        </div>
-                    </div>
-                    
-                    <h3><i class="fas fa-female"></i> Mother's Details</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Mother's Name</label>
-                            <input type="text" name="mother_name" class="form-control" 
-                                   value="<?php echo $student['mother_name']; ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Mother's Phone</label>
-                            <input type="text" name="mother_phone" class="form-control" 
-                                   value="<?php echo $student['mother_phone']; ?>" placeholder="256...">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Mother's Occupation</label>
-                            <input type="text" name="mother_occupation" class="form-control" 
-                                   value="<?php echo $student['mother_occupation']; ?>">
-                        </div>
-                    </div>
-                    
-                    <h3><i class="fas fa-user-tie"></i> Guardian/Emergency Contact</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Guardian Name</label>
-                            <input type="text" name="guardian_name" class="form-control" 
-                                   value="<?php echo $student['guardian_name']; ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Guardian Phone</label>
-                            <input type="text" name="guardian_phone" class="form-control" 
-                                   value="<?php echo $student['guardian_phone']; ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Relationship</label>
-                            <input type="text" name="guardian_relationship" class="form-control" 
-                                   value="<?php echo $student['guardian_relationship']; ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Parent Email</label>
-                            <input type="email" name="parent_email" class="form-control" 
-                                   value="<?php echo $student['parent_email']; ?>">
                         </div>
                     </div>
                 </div>

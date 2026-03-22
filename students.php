@@ -1630,12 +1630,12 @@ $boarders = array_filter($students, function($s) { return $s['student_type'] == 
                         
                         <div class="student-detail">
                             <i class="fas fa-user-tie"></i>
-                            <?php echo htmlspecialchars($student['parent_name'] ?? 'N/A'); ?>
+                            <?php echo htmlspecialchars($student['guardian_name'] ?? 'N/A'); ?>
                         </div>
                         
                         <div class="student-detail">
                             <i class="fas fa-phone"></i>
-                            <?php echo htmlspecialchars($student['parent_phone'] ?? 'N/A'); ?>
+                            <?php echo htmlspecialchars($student['guardian_phone'] ?? 'N/A'); ?>
                         </div>
                         
                         <?php if ($student['soccer_academy']): ?>
